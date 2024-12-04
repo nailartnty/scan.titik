@@ -1,0 +1,9 @@
+// Kegunaan Uint8List
+1. Manipulasi Gambar
+     Digunakan untuk memproses data gambar dalam format biner, misalnya mengirim atau menerima file gambar.
+2. Proses File
+     Membaca dan menulis file dalam bentuk byte array.
+3. Komunikasi Jaringan
+     Untuk mentransfer data biner melalui protokol seperti HTTP atau WebSocket.
+4. Enkripsi dan Dekripsi
+     Mengelola data enkripsi atau hash yang biasanya membutuhkan byte array.
