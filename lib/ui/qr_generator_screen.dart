@@ -15,7 +15,6 @@ class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
   String? qrRawValue;
   final ScreenshotController screenshotController = ScreenshotController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,12 +27,12 @@ class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.popAndPushNamed(context, '/generator');
-            }, 
+              Navigator.popAndPushNamed(context, '/scanerQR');
+            },
             icon: const Icon(
               Icons.qr_code_rounded,
               color: Color(0xFFF7F4ED),
-            )
+            ),
           )
         ],
       ),
@@ -89,68 +88,81 @@ class _QrGeneratorScreenState extends State<QrGeneratorScreen> {
             ),
             const SizedBox(height: 20),
             if (qrRawValue != null && qrRawValue!.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFD2B3DB), width: 4),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Screenshot(
-                  controller: screenshotController,
-                  child: PrettyQrView.data(
-                    data: qrRawValue!,
+              ElevatedButton(
+                onPressed: () {
+                  _showQrCodePopup(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD2B3DB), // Warna ungu pastel
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+                child: const Text(
+                  'Tampilkan QR Code',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async{
-                _shareQrCode();
-                final url = qrRawValue;
-                await Share.share('$url');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD2B3DB), // Warna ungu pastel
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              ),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    const WidgetSpan(
-                      child: Icon(
-                        Icons.share, 
-                        color: Colors.white, 
-                        size: 15
-                      ),
-                    ),
-                    const TextSpan(text: '   '),
-                    TextSpan(
-                      text: 'Share gak nih?',
-                      style: GoogleFonts.sora(color: Colors.white, fontSize: 15)
-                    )
-                  ]
-                )
-              )
-            ),
           ],
         ),
       ),
     );
   }
+
+  void _showQrCodePopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Screenshot(
+            controller: screenshotController,
+            child: PrettyQrView.data(
+              data: qrRawValue!,
+              errorCorrectLevel: QrErrorCorrectLevel.M,
+            ),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () async{
+                    _shareQrCode();
+                    final url = qrRawValue;
+                    await Share.share('$url');
+                  },
+                  icon: const Icon(
+                    Icons.share, 
+                    color: Color(0xFFD2B3DB), 
+                    size: 24
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Tutup',
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _shareQrCode() async {
-    // ambil screenshot dari QR
     final image = await screenshotController.capture();
     if (image != null) {
-      // kalau berhasil ambil gambar, share menggunakan Share Plus
       await Share.shareXFiles([
         XFile.fromData(
           image,
-          name: "qr_code.png", // nama file screenshot
-          mimeType: "image/png", // format file
+          name: "qr_code.png",
+          mimeType: "image/png",
         ),
       ]);
     }

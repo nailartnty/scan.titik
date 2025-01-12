@@ -2,8 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:qr_scanner/ui/pop_up_qrcode.dart';
-import 'package:share_plus/share_plus.dart';
 
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
